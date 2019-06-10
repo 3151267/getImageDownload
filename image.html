@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <title>画像を選択からのダウンロード</title>
+  <meta charset="UTF-8">
+</head>
+
+<body>
+  <input id="file-sample" type="file">
+  <img id="file-preview" width="500">
+
+  <a id="download" href="#" onclick="downloadImg();">画像ダウンロード</a>
+</body>
+
+
+
+<script>
+  var url = "";
+  document.getElementById('file-sample').addEventListener('change', function (e) {
+    // 1枚だけ表示する
+    var file = e.target.files[0];
+    // ファイルのブラウザ上でのURLを取得する
+    var blobUrl = window.URL.createObjectURL(file);
+    // img要素に表示
+    var img = document.getElementById('file-preview');
+    img.src = blobUrl;
+    url = blobUrl;
+  });
+
+
+
+  function downloadImg () {
+    var fileName = 'file.png';
+    var uri = url;
+
+    // IEはdownload属性が効かないので分岐
+    if (window.navigator.msSaveOrOpenBlob) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', uri);
+        xhr.responseType = 'blob';
+        xhr.onloadend = function () {
+            if (xhr.status !== 200) {
+                return false;
+            }
+            window.navigator.msSaveOrOpenBlob(xhr.response, fileName);
+        };
+        xhr.send();
+    } else {
+        var link = document.getElementById('download');
+        link.href = uri;
+        link.download = fileName;
+    }
+  }
+
+
+</script>
